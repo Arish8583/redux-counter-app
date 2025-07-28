@@ -26,7 +26,7 @@ const Reactiobutton = ({post}) => {
                     dispatch(reactionAdded({ postId: post.id, reaction: name }))
                 }
             >
-                {emoji} {post.reactions[name]}
+            {emoji} {post.reactions?.[name] ?? 0}
             </button>
         )
     })

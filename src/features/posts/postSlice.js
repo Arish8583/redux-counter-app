@@ -22,6 +22,27 @@ export const addNewPost = createAsyncThunk('posts/addNewPost', async (initialPos
     const response = await axios.post(post_url, initialPost);
     return response.data
 })
+export const fetchupdatePost = createAsyncThunk('posts/updatePost', async (initialPost, { rejectWithValue }) => {
+    const { id } = initialPost;
+    try {
+        const response = await axios.put(`${post_url}/${id}`, initialPost);
+        return response.data;
+    } catch (error) {
+        return initialPost;
+    }
+});
+
+
+export const fetchdeletePost = createAsyncThunk('posts/deletePost', async (initialPost) => {
+    const { id } = initialPost;
+    try {
+        const response = await axios.delete(`${post_url}/${id}`);
+        if (response?.status === 200) return initialPost;
+        return `${response?.status}: ${response?.statusText}`;
+      } catch (error) {
+        return error.message;
+      }
+})
 
 
 const postSlice = createSlice({
@@ -121,6 +142,43 @@ const postSlice = createSlice({
                 console.log(action.payload);
                 state.posts.push(action.payload);
             })
+            .addCase(fetchupdatePost.fulfilled, (state, action) => {
+                    if (!action.payload?.id) {
+                        console.log('Update could not complete');
+                        console.log(action.payload);
+                        return;
+                    }
+                    const { id } = action.payload;
+                    action.payload.date = new Date().toISOString();
+
+                    // 🛠️ Get old post's reactions
+                    const existingPost = state.posts.find(post => post.id === id);
+                    const reactions = existingPost?.reactions || {
+                        thumbsUp: 0, wow: 0, heart: 0, rocket: 0, coffea: 0
+                    };
+
+                    // 🛠️ Restore reactions into updated post
+                    const updatedPost = {
+                        ...action.payload,
+                        reactions
+                    };
+
+                    const posts = state.posts.filter(post => post.id !== id);
+                    state.posts = [...posts, updatedPost];
+            })
+            .addCase(fetchupdatePost.rejected, (state, action) => {
+                console.error("Update failed:", action.payload);
+            })
+            .addCase(fetchdeletePost.fulfilled, (state, action) => {
+                if (!action.payload?.id) {
+                    console.log('Delete could not complete');
+                    return;
+                }
+                const { id } = action.payload;
+                const posts = state.posts.filter(post => post.id !== id);
+                state.posts = posts;
+            })
+            
     }
 });
 
@@ -128,6 +186,7 @@ const postSlice = createSlice({
 export const selectAllPosts = (state) => state.posts.posts;
 export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
+export const selectPostById = (state, postId) => state.posts.posts.find(post => post.id === postId);
 export const { postAdded, reactionAdded } = postSlice.actions;
 
 export default postSlice.reducer;
