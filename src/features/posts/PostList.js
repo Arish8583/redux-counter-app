@@ -1,21 +1,22 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
-import { selectAllPosts, getPostsStatus, getPostsError, fetchposts } from './postSlice';
+import React from 'react'
+import { useSelector } from 'react-redux';
+import { selectAllPosts, getPostsStatus, getPostsError } from './postSlice';
 import PostExceptation from './PostExceptation';
+import { Link } from 'react-router-dom';
 
 
 const PostList = () => {
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
    
     const posts = useSelector(selectAllPosts);
     const postStatus = useSelector(getPostsStatus);
       const error = useSelector(getPostsError);
-      useEffect(() => {
-        if (postStatus === 'idle') {
-          dispatch(fetchposts());
-        }
+      // useEffect(() => {
+      //   if (postStatus === 'idle') {
+      //     dispatch(fetchposts());
+      //   }
         
-      }, [postStatus, dispatch])
+      // }, [postStatus, dispatch])
 
     //   const orderedPosts = [...posts].reverse();
     let content;

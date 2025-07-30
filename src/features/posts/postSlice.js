@@ -8,6 +8,7 @@ const initialState = {
     posts: [],
     status: 'idle',
     error: null,
+    count: 0
 
     
 }
@@ -74,6 +75,10 @@ const postSlice = createSlice({
                 existingPost.reactions[reaction]++;
             }
         },
+        increaseCount(state, action) {
+            state.count = state.count + 1
+        }
+
     },
     extraReducers(builder) {
         builder
@@ -187,7 +192,9 @@ export const selectAllPosts = (state) => state.posts.posts;
 export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
 export const selectPostById = (state, postId) => state.posts.posts.find(post => post.id === postId);
-export const { postAdded, reactionAdded } = postSlice.actions;
+export const selectpostsbyuser = (state, userId) => state.posts.posts.find(post => post.userId === userId);
+export const getcount = (state) => state.posts.count;
+export const { postAdded, reactionAdded, increaseCount } = postSlice.actions;
 
 export default postSlice.reducer;
 

@@ -24,4 +24,6 @@ const PostExceptation = ({post}) => {
   )
 }
 
+// PostExceptation = React.memo(PostExceptation);
+
 export default PostExceptation
